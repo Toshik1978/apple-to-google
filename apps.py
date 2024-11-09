@@ -20,6 +20,10 @@ class AppCollection:
         self.__cache = cache
         self.__apps = {}
 
+    def get_apps(self) -> dict[str, dict]:
+        """Get Android applications."""
+        return self.__apps
+
     def add(self, app_name: str) -> None:
         """Add application to the collection."""
 
