@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 
 import click
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 from apps import AppCollection
 from rapidapi import RapidAPI
@@ -55,8 +55,9 @@ def cli(cache, key, v, filename):
 
 
 def main():
-    # Load .env BEFORE Click parses options, so `--key` can resolve from RAPID_API_KEY.
-    load_dotenv()
+    # Resolve .env from the current working directory (walking up) BEFORE Click
+    # parses options, so `--key` can come from a .env in the dir you run from.
+    load_dotenv(find_dotenv(usecwd=True))
     cli()
 
 
