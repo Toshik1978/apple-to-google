@@ -52,6 +52,40 @@ This reads `apps.csv` and writes `apps.android.csv` beside it.
 
 Responses are cached under `--cache`, so re-runs don't re-hit (or re-bill) the API.
 
+## CSV format
+
+### Input
+
+A CSV with a **header row** that includes a `CFBundleIdentifier` column (the Apple bundle id of
+each app). Any other columns are ignored, so an unmodified Apple export works as-is:
+
+```csv
+CFBundleIdentifier,CFBundleName
+com.spotify.client,Spotify
+com.google.chrome.ios,Chrome
+```
+
+### Output
+
+`<name>.android.csv`, written beside the input. It has **no header row**; each line is one app with
+these six columns, in order:
+
+| # | Column               | Source                        | Example                                          |
+|---|----------------------|-------------------------------|--------------------------------------------------|
+| 1 | Apple bundle id      | the input `CFBundleIdentifier`| `com.spotify.client`                             |
+| 2 | Google Play app id   | Google Play package name      | `com.spotify.music`                              |
+| 3 | App name             | Google Play title             | `Spotify: Music and Podcasts`                    |
+| 4 | Google Play URL      | store listing link            | `https://play.google.com/store/apps/details?id=com.spotify.music` |
+| 5 | Current version      | latest version on Play         | `8.9.0`                                          |
+| 6 | Price                | raw price value                | `0`                                              |
+
+```csv
+com.spotify.client,com.spotify.music,Spotify: Music and Podcasts,https://play.google.com/store/apps/details?id=com.spotify.music,8.9.0,0
+```
+
+Apps with no Google Play match are skipped (logged at `-v`), so a missing analogue never aborts the
+run — it just won't appear in the output.
+
 ## Development
 
 ```bash
