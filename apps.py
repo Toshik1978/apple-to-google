@@ -11,7 +11,7 @@ class AppCollection:
     __logger: Logger
     __api: RapidAPI
     __cache: RapidAPICache
-    __apps: dict[str, dict]
+    __apps: dict[str, list]
 
     def __init__(self, logger: Logger, api: RapidAPI, cache: RapidAPICache) -> None:
         self.__logger = logger
@@ -19,7 +19,7 @@ class AppCollection:
         self.__cache = cache
         self.__apps = {}
 
-    def get_apps(self) -> dict[str, dict]:
+    def get_apps(self) -> dict[str, list]:
         """Get Android applications."""
         return self.__apps
 

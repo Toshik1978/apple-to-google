@@ -16,7 +16,7 @@ from rapidapicache import RapidAPICache
 @click.option("--key", help="RapidAPI API key", required=True, envvar="RAPID_API_KEY")
 @click.option("-v", default=False, is_flag=True, help="Verbose logging", required=False)
 @click.argument("filename", type=click.Path(exists=True), required=True)
-def main(cache, key, v, filename):
+def cli(cache, key, v, filename):
     logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=logging.DEBUG if v else logging.INFO)
     logger = logging.getLogger(__name__)
 
@@ -54,7 +54,12 @@ def main(cache, key, v, filename):
             )
 
 
+def main():
+    # Load .env BEFORE Click parses options, so `--key` can resolve from RAPID_API_KEY.
+    load_dotenv()
+    cli()
+
+
 # main block
 if __name__ == "__main__":
-    load_dotenv()
     main()

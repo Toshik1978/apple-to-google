@@ -42,7 +42,8 @@ secrets `GIST_ID` and `GIST_SECRET_TOKEN` (a PAT with `gist` scope, created by a
 
 ## Architecture
 
-The entry point is `cli.py` (`cli:main`, a Click command). Three modules behind it:
+The entry point is `cli.py`; `cli:main` is a thin wrapper that calls `load_dotenv()` then the
+Click command `cli`. Three modules behind it:
 
 - **`rapidapi.py`** — `RapidAPI` wraps the RapidAPI `app-stores` search endpoint. `search(term)`
   returns the raw JSON response text. Every outbound call passes an explicit `timeout`.

@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import runpy
 import sys
 
@@ -44,7 +45,7 @@ def test_cli_generates_android_csv_and_skips_empty(monkeypatch):
     with runner.isolated_filesystem():
         _write_input_csv("apps.csv")
 
-        result = runner.invoke(cli_module.main, ["--key", "SECRET", "apps.csv"])
+        result = runner.invoke(cli_module.cli, ["--key", "SECRET", "apps.csv"])
 
         assert result.exit_code == 0, result.output
         with open("apps.android.csv", newline="") as f:
@@ -62,7 +63,7 @@ def test_cli_reads_key_from_env(monkeypatch):
         _write_input_csv("apps.csv")
 
         # No --key on the command line; it must come from the env var.
-        result = runner.invoke(cli_module.main, ["apps.csv"])
+        result = runner.invoke(cli_module.cli, ["apps.csv"])
 
         assert result.exit_code == 0, result.output
         # No --key was passed; success proves the key came from RAPID_API_KEY.
@@ -82,7 +83,7 @@ def test_cli_skips_row_that_fails_to_add(monkeypatch):
             writer.writerow(["SomeOtherColumn"])
             writer.writerow(["irrelevant"])
 
-        result = runner.invoke(cli_module.main, ["--key", "SECRET", "apps.csv"])
+        result = runner.invoke(cli_module.cli, ["--key", "SECRET", "apps.csv"])
 
         assert result.exit_code == 0, result.output
         with open("apps.android.csv", newline="") as f:
@@ -106,3 +107,28 @@ def test_main_block_loads_dotenv_and_invokes_main(monkeypatch):
         with open("apps.android.csv", newline="") as f:
             rows = list(csv.reader(f))
     assert rows[0][0] == "com.example.one"
+
+
+def test_cli_reads_key_from_dotenv_file(monkeypatch):
+    # Regression: the console-script wrapper main() must load_dotenv() BEFORE Click
+    # parses, so a .env FILE (no env var set) supplies RAPID_API_KEY.
+    monkeypatch.setattr(rapidapi.requests, "get", _fake_get)
+    monkeypatch.delenv("RAPID_API_KEY", raising=False)
+    monkeypatch.setattr(sys, "argv", ["apple-to-google", "apps.csv"])
+    runner = CliRunner()
+    try:
+        with runner.isolated_filesystem():
+            _write_input_csv("apps.csv")
+            with open(".env", "w") as f:
+                f.write("RAPID_API_KEY=FROM-DOTENV\n")
+
+            with pytest.raises(SystemExit) as exc_info:
+                cli_module.main()
+
+            assert exc_info.value.code == 0
+            with open("apps.android.csv", newline="") as f:
+                rows = list(csv.reader(f))
+        assert rows[0][0] == "com.example.one"
+    finally:
+        # load_dotenv() writes straight to os.environ, outside monkeypatch's tracking.
+        os.environ.pop("RAPID_API_KEY", None)
