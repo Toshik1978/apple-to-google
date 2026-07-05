@@ -1,6 +1,6 @@
 [![CI](https://github.com/Toshik1978/apple-to-google/actions/workflows/ci.yml/badge.svg)](https://github.com/Toshik1978/apple-to-google/actions)
-![Tests](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Toshik1978/GIST_ID_PLACEHOLDER/raw/tests.json&maxAge=180)
-![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Toshik1978/GIST_ID_PLACEHOLDER/raw/coverage.json&maxAge=180)
+![Tests](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Toshik1978/97986d66320283efb97842821be828aa/raw/tests.json&maxAge=180)
+![Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Toshik1978/97986d66320283efb97842821be828aa/raw/coverage.json&maxAge=180)
 
 # Apple → Google app finder
 
