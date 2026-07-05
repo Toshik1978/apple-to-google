@@ -11,6 +11,18 @@ Google Play through the [RapidAPI app-stores API](https://rapidapi.com/danielami
 caches every response on disk, and writes a sibling `<name>.android.csv` with the matched Google
 Play app id, name, URL, version and price.
 
+## Why I built this
+
+I was on Apple for **10 years**, and over that time I'd accumulated a whole set of apps I relied on
+day to day. When I started thinking about moving to Android, the real question wasn't the phone —
+it was whether I'd be able to replace all of those apps. I couldn't find a good enough way to check:
+going through them one by one, searching Google Play by hand, was slow and error-prone.
+
+So I wrote this. I exported my Apple apps, ran them through the tool, and got back a CSV of the
+Google Play equivalents in one pass. It saved a lot of time — but more importantly, it's what
+actually made the decision for me. Once I could see that **every app had an Android counterpart
+except one**, I knew the migration was safe, and I went ahead with it.
+
 ## Requirements
 
 - Python 3.14+ and [uv](https://docs.astral.sh/uv/)
