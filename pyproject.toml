@@ -26,14 +26,14 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 # Flat layout: the project is a set of top-level modules rather than a single
 # package matching the project name.
-only-include = ["cli.py", "apps.py", "rapidapi.py", "rapidapicache.py"]
+only-include = ["cli.py", "apps.py", "rapidapi.py", "rapidapicache.py", "itunes.py"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
 
 [tool.coverage.run]
-source = ["cli", "apps", "rapidapi", "rapidapicache"]
+source = ["cli", "apps", "rapidapi", "rapidapicache", "itunes"]
 omit = ["tests/*"]
 
 [tool.ruff]

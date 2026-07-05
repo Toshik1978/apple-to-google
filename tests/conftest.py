@@ -1,3 +1,4 @@
+import json
 import logging
 
 import pytest
@@ -18,3 +19,6 @@ class FakeResponse:
     def raise_for_status(self) -> None:
         if self.__error is not None:
             raise self.__error
+
+    def json(self) -> object:
+        return json.loads(self.text)
