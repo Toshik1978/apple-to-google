@@ -3,8 +3,8 @@ from logging import Logger
 from pathlib import Path
 
 
-class RapidAPICache:
-    """Cache for application information from RapidAPI responses."""
+class Cache:
+    """On-disk JSON cache keyed by application bundle id."""
 
     __logger: Logger
     __path: str
