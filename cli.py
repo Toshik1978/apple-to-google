@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 
 import click
+from dotenv import load_dotenv
 
 from apps import AppCollection
 from rapidapi import RapidAPI
@@ -12,7 +13,7 @@ from rapidapicache import RapidAPICache
 
 @click.command()
 @click.option("--cache", default=".cache", type=click.Path(exists=False), help="Cache directory")
-@click.option("--key", help="RapidAPI API key", required=True)
+@click.option("--key", help="RapidAPI API key", required=True, envvar="RAPID_API_KEY")
 @click.option("-v", default=False, is_flag=True, help="Verbose logging", required=False)
 @click.argument("filename", type=click.Path(exists=True), required=True)
 def main(cache, key, v, filename):
@@ -36,18 +37,24 @@ def main(cache, key, v, filename):
         writer = csv.writer(newfile)
         apps = coll.get_apps()
         for app in apps:
+            matches = apps[app]
+            if not matches:
+                logger.debug(f"No Google Play match for {app}, skipping")
+                continue
+            match = matches[0]
             writer.writerow(
                 [
                     app,
-                    apps[app][0]["id"],
-                    apps[app][0]["name"],
-                    apps[app][0]["url"],
-                    apps[app][0]["currentVersion"],
-                    apps[app][0]["price"]["raw"],
+                    match["id"],
+                    match["name"],
+                    match["url"],
+                    match["currentVersion"],
+                    match["price"]["raw"],
                 ]
             )
 
 
 # main block
 if __name__ == "__main__":
+    load_dotenv()
     main()
