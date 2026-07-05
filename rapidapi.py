@@ -21,6 +21,6 @@ class RapidAPI:
         self.__logger.debug(f"Searching {app_name}")
 
         query = {"language": "en", "store": "google", "term": app_name}
-        r = requests.get(self.__api_url, headers=self.__headers, params=query)
+        r = requests.get(self.__api_url, headers=self.__headers, params=query, timeout=30)
         r.raise_for_status()
         return r.text
