@@ -97,10 +97,13 @@ That writes a header row plus one line per app. The tool only needs the `CFBundl
 ### Input
 
 A CSV with a **header row** that includes a `CFBundleIdentifier` column (the Apple bundle id of
-each app). Any other columns are ignored, so an unmodified Apple export works as-is:
+each app). If it also has a `CFBundleDisplayName` (or `CFBundleName`) column — as an
+`ideviceinstaller` export does — that name is used as the Google Play search term directly;
+otherwise the name is looked up from the App Store. Any further columns are ignored, so an
+unmodified Apple export works as-is:
 
 ```csv
-CFBundleIdentifier,CFBundleName
+CFBundleIdentifier,CFBundleDisplayName
 com.spotify.client,Spotify
 com.google.chrome.ios,Chrome
 ```

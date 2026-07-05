@@ -37,6 +37,35 @@ def _write_input_csv(path):
         writer.writerow(["com.example.empty"])
 
 
+def test_cli_uses_name_column_when_present(monkeypatch):
+    # When the CSV carries a name column (as `ideviceinstaller` produces), the name is
+    # used directly and the iTunes lookup is skipped.
+    seen = {"itunes_calls": 0}
+
+    def fake_get(url, headers=None, params=None, timeout=None):
+        if "itunes.apple.com" in url:
+            seen["itunes_calls"] += 1
+            return FakeResponse(ITUNES[params["bundleId"]])
+        return FakeResponse(STORE.get(params["q"], '{"data":{"apps":[]}}'))
+
+    monkeypatch.setattr(requests, "get", fake_get)
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        with open("apps.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["CFBundleIdentifier", "CFBundleDisplayName"])
+            writer.writerow(["com.example.one", "One"])
+
+        result = runner.invoke(cli_module.cli, ["--key", "K", "apps.csv"])
+
+        assert result.exit_code == 0, result.output
+        with open("apps.android.csv", newline="") as f:
+            rows = list(csv.reader(f))
+
+    assert rows[0][1] == "com.google.one"  # matched via the display name
+    assert seen["itunes_calls"] == 0  # iTunes was skipped
+
+
 def test_cli_generates_android_csv_and_skips_unmatched(monkeypatch):
     monkeypatch.setattr(requests, "get", _fake_get)
     runner = CliRunner()

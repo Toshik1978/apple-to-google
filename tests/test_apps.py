@@ -19,9 +19,11 @@ class FakeStoreApps:
     def __init__(self, record: dict | None) -> None:
         self.record = record
         self.calls = 0
+        self.terms: list[str] = []
 
     def search(self, term: str) -> dict | None:
         self.calls += 1
+        self.terms.append(term)
         return self.record
 
 
@@ -89,3 +91,28 @@ def test_add_with_no_play_match_records_none(logger):
     assert itunes.calls == 1
     assert storeapps.calls == 1
     assert coll.get_apps() == {"com.obscure.app": None}
+
+
+def test_add_with_provided_name_skips_itunes(logger):
+    itunes = FakeItunes("should-not-be-used")
+    storeapps = FakeStoreApps(RECORD)
+    cache = FakeCache()
+    coll = AppCollection(logger, itunes, storeapps, cache)
+
+    coll.add("com.netflix.Netflix", "Netflix")
+
+    assert itunes.calls == 0
+    assert storeapps.terms == ["Netflix"]
+    assert coll.get_apps() == {"com.netflix.Netflix": RECORD}
+
+
+def test_add_falls_back_to_itunes_when_name_empty(logger):
+    itunes = FakeItunes("Netflix From iTunes")
+    storeapps = FakeStoreApps(RECORD)
+    cache = FakeCache()
+    coll = AppCollection(logger, itunes, storeapps, cache)
+
+    coll.add("com.netflix.Netflix", "")  # empty name -> iTunes fallback
+
+    assert itunes.calls == 1
+    assert storeapps.terms == ["Netflix From iTunes"]

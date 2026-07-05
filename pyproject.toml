@@ -1,6 +1,6 @@
 [project]
 name = "apple-to-google"
-version = "2.0.0"
+version = "2.1.0"
 description = "Find Android (Google Play) analogues for Apple App Store applications"
 readme = "README.md"
 license = "MIT"

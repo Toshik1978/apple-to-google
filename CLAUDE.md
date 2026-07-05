@@ -56,9 +56,10 @@ Click command `cli`. Three adapters behind it:
 - **`cache.py`** — `Cache` is an on-disk JSON cache keyed by bundle id (`<path>/<key>.json`). It
   stores the final resolved record (a dict, or JSON `null` for "no match"), so re-runs skip both
   network calls.
-- **`apps.py`** — `AppCollection` orchestrates: `add(bundle_id)` returns the cached record if present,
-  else resolves the name via iTunes → searches Store Apps → caches the record. `get_apps()` returns
-  `{bundle_id: record | None}`.
+- **`apps.py`** — `AppCollection` orchestrates: `add(bundle_id, name=None)` returns the cached record
+  if present, else uses the supplied `name` (from the CSV's display-name column) as the search term —
+  or resolves it via iTunes when no name is given → searches Store Apps → caches the record.
+  `get_apps()` returns `{bundle_id: record | None}`.
 
 `cli.py` reads the input CSV (`CFBundleIdentifier` per row, failures logged at debug and skipped),
 then writes `<name>.android.csv` (no header, 5 columns) for each matched app, skipping `None` records.

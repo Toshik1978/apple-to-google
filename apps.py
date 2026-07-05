@@ -26,20 +26,25 @@ class AppCollection:
         """Get resolved Google Play matches (None where no match was found)."""
         return self.__apps
 
-    def add(self, bundle_id: str) -> None:
-        """Resolve a bundle id to its Google Play match and store it."""
+    def add(self, bundle_id: str, name: str | None = None) -> None:
+        """Resolve a bundle id to its Google Play match and store it.
+
+        If a name is supplied (e.g. from the input CSV's display-name column) it is
+        used as the search term directly; otherwise the App Store name is looked up.
+        """
 
         cached = self.__cache.get(bundle_id)
         if cached is not None:
             self.__apps[bundle_id] = json.loads(cached)
             return
 
-        record = self.__resolve(bundle_id)
+        record = self.__resolve(bundle_id, name)
         self.__cache.set(bundle_id, json.dumps(record))
         self.__apps[bundle_id] = record
 
-    def __resolve(self, bundle_id: str) -> dict | None:
-        name = self.__itunes.lookup_name(bundle_id)
+    def __resolve(self, bundle_id: str, name: str | None) -> dict | None:
+        if not name:
+            name = self.__itunes.lookup_name(bundle_id)
         if not name:
             self.__logger.debug(f"No App Store entry for {bundle_id}")
             return None

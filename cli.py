@@ -29,7 +29,10 @@ def cli(cache, key, region, lang, v, filename):
         reader = csv.DictReader(csvfile)
         for row in reader:
             try:
-                coll.add(row["CFBundleIdentifier"])
+                # Use the app name from the CSV if present (e.g. ideviceinstaller's
+                # CFBundleDisplayName), else fall back to an App Store lookup.
+                name = (row.get("CFBundleDisplayName") or row.get("CFBundleName") or "").strip() or None
+                coll.add(row["CFBundleIdentifier"], name)
             except Exception as e:
                 logger.debug(f"Failed to add application: {e}")
 
