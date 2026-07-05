@@ -6,10 +6,11 @@
 
 A command-line tool that finds Android (Google Play) analogues for your Apple App Store apps.
 
-Give it a CSV exported from Apple (with a `CFBundleIdentifier` column). For each app it searches
-Google Play through the [RapidAPI app-stores API](https://rapidapi.com/danielamitay/api/app-stores/),
-caches every response on disk, and writes a sibling `<name>.android.csv` with the matched Google
-Play app id, name, URL, version and price.
+Give it a CSV exported from Apple (with a `CFBundleIdentifier` column). For each app it looks up the
+App Store name via Apple's free iTunes Lookup API, finds the matching Google Play app with the
+[Store Apps API](https://rapidapi.com/letscrape-6bRBa3QguO5/api/store-apps), caches every resolved
+match on disk, and writes a sibling `<name>.android.csv` with the matched Google Play app id, name,
+URL and price.
 
 ## Why I built this
 
@@ -26,8 +27,8 @@ except one**, I knew the migration was safe, and I went ahead with it.
 ## Requirements
 
 - Python 3.14+ and [uv](https://docs.astral.sh/uv/)
-- A RapidAPI subscription to the
-  [app-stores API](https://rapidapi.com/danielamitay/api/app-stores/)
+- A [RapidAPI](https://rapidapi.com/) key subscribed to the free tier of the
+  [Store Apps API](https://rapidapi.com/letscrape-6bRBa3QguO5/api/store-apps) (100 requests/month)
 
 ## Usage
 
@@ -39,18 +40,19 @@ cp .env.dist .env        # put your key in RAPID_API_KEY (or pass --key)
 uv run apple-to-google apps.csv
 ```
 
-This reads `apps.csv` and writes `apps.android.csv` beside it.
+This reads `apps.csv` and writes `apps.android.csv` beside it. Apple name lookups are free; each
+matched app costs one Store Apps request, and results are cached under `--cache` so re-runs are free.
 
 ### Options
 
-| Option        | Description                                              |
-|---------------|----------------------------------------------------------|
-| `--key`       | RapidAPI key (overrides `RAPID_API_KEY` from env/`.env`) |
-| `--cache DIR` | Cache directory (default `.cache`)                       |
-| `-v`          | Verbose logging                                          |
-| `FILENAME`    | Input CSV with a `CFBundleIdentifier` column (required)  |
-
-Responses are cached under `--cache`, so re-runs don't re-hit (or re-bill) the API.
+| Option         | Description                                              |
+|----------------|------------------------------------------------------------|
+| `--key`        | RapidAPI key (overrides `RAPID_API_KEY` from env/`.env`)  |
+| `--cache DIR`  | Cache directory (default `.cache`)                       |
+| `--region CC`  | App Store / Google Play region code (default `us`)       |
+| `--lang LL`    | Google Play language code (default `en`)                 |
+| `-v`           | Verbose logging                                          |
+| `FILENAME`     | Input CSV with a `CFBundleIdentifier` column (required)  |
 
 ## Generating the input from your iPhone
 
@@ -106,7 +108,7 @@ com.google.chrome.ios,Chrome
 ### Output
 
 `<name>.android.csv`, written beside the input. It has **no header row**; each line is one app with
-these six columns, in order:
+these five columns, in order:
 
 | # | Column               | Source                        | Example                                          |
 |---|----------------------|-------------------------------|--------------------------------------------------|
@@ -114,15 +116,14 @@ these six columns, in order:
 | 2 | Google Play app id   | Google Play package name      | `com.spotify.music`                              |
 | 3 | App name             | Google Play title             | `Spotify: Music and Podcasts`                    |
 | 4 | Google Play URL      | store listing link            | `https://play.google.com/store/apps/details?id=com.spotify.music` |
-| 5 | Current version      | latest version on Play         | `8.9.0`                                          |
-| 6 | Price                | raw price value                | `0`                                              |
+| 5 | Price                | numeric price (0 if free)     | `0`                                              |
 
 ```csv
-com.spotify.client,com.spotify.music,Spotify: Music and Podcasts,https://play.google.com/store/apps/details?id=com.spotify.music,8.9.0,0
+com.spotify.client,com.spotify.music,Spotify: Music and Podcasts,https://play.google.com/store/apps/details?id=com.spotify.music,0
 ```
 
-Apps with no Google Play match are skipped (logged at `-v`), so a missing analogue never aborts the
-run — it just won't appear in the output.
+Apps with no App Store entry or no Google Play match are skipped (logged at `-v`), so a missing
+analogue never aborts the run — it just won't appear in the output.
 
 ## Development
 
