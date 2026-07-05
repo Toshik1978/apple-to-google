@@ -1,9 +1,8 @@
 import json
 from logging import Logger
-from typing import Mapping
 
-from rapidapicache import RapidAPICache
 from rapidapi import RapidAPI
+from rapidapicache import RapidAPICache
 
 
 class AppCollection:

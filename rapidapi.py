@@ -1,5 +1,5 @@
+from collections.abc import Mapping
 from logging import Logger
-from typing import Mapping
 
 import requests
 
@@ -13,10 +13,7 @@ class RapidAPI:
 
     def __init__(self, logger: Logger, api_key: str) -> None:
         self.__logger = logger
-        self.__headers = {
-            "x-rapidapi-key": api_key,
-            "x-rapidapi-host": "app-stores.p.rapidapi.com"
-        }
+        self.__headers = {"x-rapidapi-key": api_key, "x-rapidapi-host": "app-stores.p.rapidapi.com"}
 
     def search(self, app_name: str) -> str:
         """Search application in Google Play by query."""
