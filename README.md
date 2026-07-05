@@ -52,6 +52,44 @@ This reads `apps.csv` and writes `apps.android.csv` beside it.
 
 Responses are cached under `--cache`, so re-runs don't re-hit (or re-bill) the API.
 
+## Generating the input from your iPhone
+
+You don't have to build the CSV by hand — you can read the list of installed apps straight off your
+iPhone with [`ideviceinstaller`](https://github.com/libimobiledevice/ideviceinstaller) (part of
+[libimobiledevice](https://libimobiledevice.org/)).
+
+Install it, then plug the iPhone in over USB, unlock it, and tap **"Trust This Computer"**:
+
+```bash
+brew install ideviceinstaller        # macOS
+sudo apt install ideviceinstaller    # Debian/Ubuntu
+```
+
+> Use a recent build (**1.2.0+**, Oct 2025) — earlier versions predate current iOS support.
+
+`ideviceinstaller list` prints your **installed user apps** (not your whole purchase history), and
+its `--xml` output includes each app's `CFBundleIdentifier`. Turn that into an `apps.csv` this tool
+can read (only stdlib `plistlib`/`csv`, no extra packages):
+
+```bash
+ideviceinstaller list --xml | python3 -c '
+import sys, csv, plistlib
+apps = plistlib.load(sys.stdin.buffer)
+w = csv.writer(sys.stdout)
+w.writerow(["CFBundleIdentifier", "CFBundleDisplayName"])
+for a in apps:
+    w.writerow([a.get("CFBundleIdentifier", ""), a.get("CFBundleDisplayName", "")])
+' > apps.csv
+```
+
+That writes a header row plus one line per app. The tool only needs the `CFBundleIdentifier` column
+(the `CFBundleDisplayName` is there so you can eyeball the list); see the format below. Then run
+`apple-to-google apps.csv` as usual.
+
+> Notes: this lists apps *currently installed* on the device (the "apps I actually use" set).
+> There is no on-device / iOS-only way to enumerate installed apps with their bundle ids — the USB
+> connection is required. `ideviceinstaller` runs on macOS, Linux and Windows.
+
 ## CSV format
 
 ### Input
