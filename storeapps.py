@@ -39,5 +39,5 @@ class StoreApps:
             "app_id": app_id,
             "app_name": top["app_name"],
             "url": top.get("app_page_link") or f"https://play.google.com/store/apps/details?id={app_id}",
-            "price": top.get("price", 0),
+            "price": top.get("price") or 0,
         }

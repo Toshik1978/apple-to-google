@@ -59,3 +59,9 @@ def test_search_raises_on_http_error(logger, monkeypatch):
     monkeypatch.setattr(storeapps.requests, "get", lambda *a, **k: FakeResponse(error=requests.HTTPError("boom")))
     with pytest.raises(requests.HTTPError):
         StoreApps(logger, "K").search("Netflix")
+
+
+def test_search_defaults_null_price_to_zero(logger, monkeypatch):
+    body = '{"data":{"apps":[{"app_id":"com.x.y","app_name":"XY","app_page_link":"u","price":null}]}}'
+    monkeypatch.setattr(storeapps.requests, "get", lambda *a, **k: FakeResponse(body))
+    assert StoreApps(logger, "K").search("XY")["price"] == 0
