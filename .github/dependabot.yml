@@ -5,13 +5,13 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     commit-message:
       prefix: build
       include: scope
     # One grouped PR for all minor/patch bumps; majors stay separate.
     groups:
-      python:
+      uv:
         patterns:
           - "*"
         update-types:
@@ -23,15 +23,16 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     commit-message:
       prefix: ci
       include: scope
-    # One grouped PR for all minor/patch bumps; majors stay separate.
+    # One grouped PR for every bump, majors included.
     groups:
       github-actions:
         patterns:
           - "*"
         update-types:
+          - major
           - minor
           - patch
