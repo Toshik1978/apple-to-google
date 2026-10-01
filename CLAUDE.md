@@ -74,10 +74,6 @@ then writes `<name>.android.csv` (no header, 5 columns) for each matched app, sk
   Imports are absolute (`from itunes import ...`).
 - Secrets (`.env`, `RAPID_API_KEY`) must never be committed.
 
-## Git conventions
-
-- **Never add `Co-Authored-By` trailers** (or any AI attribution) to commit messages.
-
 ## Gotchas when editing
 
 - New top-level modules must be added to `only-include` in `pyproject.toml`.
