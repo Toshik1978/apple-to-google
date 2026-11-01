@@ -10,7 +10,7 @@ dependencies = [
     "click==8.5.0",
     "requests==2.34.2",
     "urllib3==2.8.0",
-    "python-dotenv==1.2.3",
+    "python-dotenv==1.2.4",
 ]
 
 [project.scripts]
